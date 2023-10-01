@@ -11,9 +11,11 @@ public class UserPanel extends JFrame {
     private int antCount; // 蚂蚁数量
     private int velocity; // 蚂蚁速度
     private int[] antPosition; // 蚂蚁的位置
+    public boolean inputDone; // 是否已输入完成
 
     // 构建用户面板
     public void InitUserPanel() {
+        inputDone = false;
         setSize(720, 480); // 窗口大小
         setLocationRelativeTo(null); // 居中
         setTitle("Ants Creeping Game (OOAD21 Lab01)"); // 标题
@@ -79,8 +81,8 @@ public class UserPanel extends JFrame {
                 Boolean flag3 = checkVelocity(velocity);
                 Boolean flag4 = checkPositions(antPosition);
                 if (flag1 && flag2 && flag3 && flag4) {
+                    inputDone = true;
                     setVisible(false);
-                    // @TODO
                 }
             }
         });
