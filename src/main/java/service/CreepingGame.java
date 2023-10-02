@@ -2,7 +2,6 @@ package service;
 
 import entity.Ant;
 import entity.Pole;
-import utils.Constants;
 
 import java.awt.*;
 import java.awt.event.WindowAdapter;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.System.exit;
+import static utils.Constants.gameState;
 
 public class CreepingGame extends Frame {
     private Pole pole; // 杆子
@@ -21,13 +21,13 @@ public class CreepingGame extends Frame {
     private int velocity; // 速度
     private int[] antPosition; // 蚂蚁位置数组
     private int[] antDirection; // 蚂蚁方向数组
-    private static Constants.gameState state; // 游戏状态
+    private static int state; // 游戏状态
     private static int round; // 游戏回合
     private int roundTime; // 一轮游戏的时间
-    private int minTime = (int) 2e9;
-    private int maxTime = (int) -2e9;
+    private int minTime = (int) 2e5;
+    private int maxTime = (int) -2e5;
 
-    private final BufferedImage bufImg = new BufferedImage(720, 480, BufferedImage.TYPE_4BYTE_ABGR);
+    private final BufferedImage bufImg = new BufferedImage(750, 420, BufferedImage.TYPE_4BYTE_ABGR);
 
     // Constructor
     public CreepingGame(int poleLength, int antCount, int velocity, int[] positions, int[] antDirection) {
@@ -42,7 +42,7 @@ public class CreepingGame extends Frame {
 
     // 初始化Frame
     private void initFrame() {
-        setSize(720,480); // 设置窗口大小
+        setSize(750,420); // 设置窗口大小
         setLocationRelativeTo(null); // 居中
         setTitle("Ants Creeping Game (OOAD21 Lab01)"); // 标题
         // 监听Jframe窗体关闭事件
@@ -58,14 +58,16 @@ public class CreepingGame extends Frame {
 
     // 初始化游戏中各个对象
     private void initGame() {
+        roundTime = 0;
         round = 0;
         pole = new Pole(poleLength);
         antList = new ArrayList<>();
+
         for (int i = 0; i < antCount; i++) {
-            Ant ant = new Ant(i,antDirection[i],velocity,antPosition[i]);
+            Ant ant = new Ant(i,antDirection[i],velocity,antPosition[i] + 100);
             antList.add(ant);
         }
-        changeState(Constants.gameState.GAME_READY);
+        changeState(gameState.GAME_READY.ordinal());
         new Thread(() -> {
             while (true) {
                 repaint();
@@ -85,32 +87,35 @@ public class CreepingGame extends Frame {
         g.setFont(new Font("微软雅黑",Font.PLAIN,20));
         pole.drawPole(bufImg.getGraphics()); // 绘制木杆
 
-        if (state == Constants.gameState.GAME_READY) {
+        if (state == gameState.GAME_READY.ordinal()) {
             roundTime = 0;
             for (int i = 0; i < antCount; i++) {
-                antList.get(i).setPosition(antPosition[i]);
+                antList.get(i).setPosition(antPosition[i] + 100);
                 antList.get(i).setDirection(antDirection[i]);
             }
-            changeState(Constants.gameState.GAME_RUNNING);
+            changeState(gameState.GAME_RUNNING.ordinal());
         }
-        if (state == Constants.gameState.GAME_RUNNING) {
+        else if (state == gameState.GAME_RUNNING.ordinal()) {
             for (Ant ant : antList) {
                 ant.creep(pole);
                 ant.drawAnt(bufImg.getGraphics());
             }
+            for (Ant ant2 : antList) {
+                System.out.print(ant2.getPosition()+" ");
+            }
+            System.out.print('\n');
             testCollision();
             roundTime++;
-            round++;
             if (isAllReach()) {
-                changeState(Constants.gameState.GAME_STOPPED);
+                changeState(gameState.GAME_STOPPED.ordinal());
             }
         }
-        if (state == Constants.gameState.GAME_STOPPED) {
+        else if (state == gameState.GAME_STOPPED.ordinal()) {
             if (roundTime < minTime) minTime = roundTime;
             if (roundTime > maxTime) maxTime = roundTime;
-            System.out.println(("第"+round+"伦结束，用时："+roundTime));
             round++;
-            changeState(Constants.gameState.GAME_READY);
+            System.out.println(("第"+round+"轮结束，用时："+roundTime));
+            changeState(gameState.GAME_READY.ordinal());
         }
 
         g.drawImage(bufImg, 0, 0, null);
@@ -120,7 +125,7 @@ public class CreepingGame extends Frame {
     }
 
     // 改变游戏状态
-    private void changeState(Constants.gameState gameState) {
+    private static void changeState(int gameState) {
         CreepingGame.state = gameState;
     }
 

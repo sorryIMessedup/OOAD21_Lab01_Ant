@@ -1,6 +1,8 @@
 package service;
 
 import java.math.BigInteger;
+import java.util.Arrays;
+
 import static java.lang.Thread.sleep;
 
 public class PlayRoom {
@@ -14,10 +16,10 @@ public class PlayRoom {
         System.out.println("正在等待输入中。");
         while (!myUserPanel.inputDone) { sleep(100); }
         System.out.println("输入成功。");
-
+        System.out.println(Arrays.toString(myUserPanel.getAntPosition()));
         int cnt = myUserPanel.getAntCount();
 
-        int[] antDirection = {1, 1, 1, 1, 1};
+        int[] antDirection = {1,1,1,1,1};
 
         CreepingGame game = new CreepingGame(
                 myUserPanel.getPoleLength(),

@@ -27,6 +27,7 @@ public class Pole {
     }
 
     public void drawPole(Graphics g) {
+        g.fillRect(0,0,750,420);
         g.drawImage(poleImg, 115, 200, poleLength + 10, 20, null);
     }
 }

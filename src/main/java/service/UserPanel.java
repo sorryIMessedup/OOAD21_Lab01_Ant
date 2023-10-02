@@ -16,10 +16,10 @@ public class UserPanel extends JFrame {
     // 构建用户面板
     public void InitUserPanel() {
         inputDone = false;
-        setSize(720, 480); // 窗口大小
+        setSize(750, 420); // 窗口大小
         setLocationRelativeTo(null); // 居中
         setTitle("Ants Creeping Game (OOAD21 Lab01)"); // 标题
-        setLayout(new FlowLayout(FlowLayout.CENTER, 100, 30));
+        setLayout(new FlowLayout(FlowLayout.CENTER, 150, 20));
 
         JLabel poleLengthLabel = new JLabel("木杆长度");
         poleLengthLabel.setFont(new Font("Serif", Font.BOLD, 20));
