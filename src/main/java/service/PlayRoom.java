@@ -13,7 +13,7 @@ public class PlayRoom {
 
         // 忙等待以实现同步
         System.out.println("正在等待输入中。");
-        while (!myUserPanel.inputDone) { sleep(100); }
+        while (!myUserPanel.inputDone) { sleep(1); }
         System.out.println("输入成功。");
         direction = new int[32][5];
 

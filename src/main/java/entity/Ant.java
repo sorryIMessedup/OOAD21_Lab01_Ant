@@ -12,7 +12,7 @@ public class Ant {
     private int antId; // 蚂蚁的id
     private int direction; // 方向
     private int velocity; // 速度
-    private int position; // 在木杆上的位置
+    private double position; // 在木杆上的位置
     private final BufferedImage antLeftImg; // 图片路径
     private final BufferedImage antRightImg; // 图片路径
 
@@ -51,11 +51,11 @@ public class Ant {
         this.velocity = velocity;
     }
 
-    public int getPosition() {
+    public double getPosition() {
         return position;
     }
 
-    public void setPosition(int position) {
+    public void setPosition(double position) {
         this.position = position;
     }
 
@@ -63,13 +63,13 @@ public class Ant {
     // 根据蚂蚁方向使其运动并判断是否已到达尽头
     public void creep(Pole pole) {
         if (direction == Constants.antDirection.TO_LEFT.ordinal()) {
-            position -= velocity;
-            if (position <= 100) { // 走到左尽头
-                position = 100;
+            position -= (double)velocity / 10;
+            if (position <= 100.0) { // 左尽头
+                position = 100.0;
                 direction = Constants.antDirection.STOPPED.ordinal();
             }
         } else if (direction == Constants.antDirection.TO_RIGHT.ordinal()) {
-            position += velocity;
+            position += (double)velocity / 10;
             if (position >= pole.getPoleLength() + 100) { // 右尽头
                 position = pole.getPoleLength() + 100;
                 direction = Constants.antDirection.STOPPED.ordinal();
@@ -94,8 +94,8 @@ public class Ant {
     // 绘制蚂蚁
     public void drawAnt(Graphics graphics) {
         if (this.direction == antDirection.TO_LEFT.ordinal())
-            graphics.drawImage(antLeftImg, position, 200, null);
+            graphics.drawImage(antLeftImg, (int)position, 200, null);
         else
-            graphics.drawImage(antRightImg, position, 200, null);
+            graphics.drawImage(antRightImg, (int)position, 200, null);
     }
 }

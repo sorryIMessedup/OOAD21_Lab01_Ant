@@ -19,7 +19,7 @@ public class CreepingGame extends Frame {
     private List<Ant> antList; // 当前蚂蚁列表
     private final int antCount; // 蚂蚁数量
     private final int velocity; // 速度
-    private final int[] antPosition; // 蚂蚁位置数组
+    private final double[] antPosition; // 蚂蚁位置数组
     private final int[][] antDirection; // 蚂蚁方向数组
     private static int state; // 游戏状态
     private static int round; // 游戏回合
@@ -30,7 +30,7 @@ public class CreepingGame extends Frame {
     private final BufferedImage bufImg = new BufferedImage(750, 420, BufferedImage.TYPE_4BYTE_ABGR);
 
     // Constructor
-    public CreepingGame(int poleLength, int antCount, int velocity, int[] positions, int[][] antDirection) {
+    public CreepingGame(int poleLength, int antCount, int velocity, double[] positions, int[][] antDirection) {
         this.poleLength = poleLength;
         this.antCount = antCount;
         this.velocity = velocity;
@@ -64,7 +64,7 @@ public class CreepingGame extends Frame {
         antList = new ArrayList<>();
 
         for (int i = 0; i < antCount; i++) {
-            Ant ant = new Ant(i, antDirection[round][i], velocity, antPosition[i] + 100);
+            Ant ant = new Ant(i, antDirection[round][i], velocity, (int)antPosition[i] + 100);
             antList.add(ant);
         }
         changeState(gameState.GAME_READY.ordinal());
@@ -72,7 +72,7 @@ public class CreepingGame extends Frame {
             while (round < (1 << antCount)) {
                 repaint();
                 try {
-                    Thread.sleep(50);
+                    Thread.sleep(5);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -84,12 +84,11 @@ public class CreepingGame extends Frame {
     @Override
     public void update(Graphics g) {
         pole.drawPole(bufImg.getGraphics()); // 绘制木杆
-
         if (round < (1 << antCount)) {
             if (state == gameState.GAME_READY.ordinal()) {
                 PlayRoom.time = 0;
                 for (int i = 0; i < antCount && round < (1 << antCount); i++) {
-                    antList.get(i).setPosition(antPosition[i] + 100);
+                    antList.get(i).setPosition((int)antPosition[i] + 100);
                     antList.get(i).setDirection(antDirection[round][i]);
                 }
                 changeState(gameState.GAME_RUNNING.ordinal());
@@ -107,7 +106,7 @@ public class CreepingGame extends Frame {
                 if (PlayRoom.time < minTime) minTime = PlayRoom.time;
                 if (PlayRoom.time > maxTime) maxTime = PlayRoom.time;
                 round++;
-                System.out.println(("第" + round + "轮结束，用时：" + PlayRoom.time));
+                System.out.println(("第" + round + "轮结束，用时：" + PlayRoom.time/10));
                 changeState(gameState.GAME_READY.ordinal());
             }
             g.setColor(Color.black);
@@ -118,10 +117,10 @@ public class CreepingGame extends Frame {
                 g.drawString("      最短时间：" + "无", 430, 160);
                 g.drawString("      最长时间：" + "无", 430, 190);
             } else {
-                g.drawString("      最短时间：" + minTime, 430, 160);
-                g.drawString("      最长时间： " + maxTime, 430, 190);
+                g.drawString("      最短时间：" + minTime/10, 430, 160);
+                g.drawString("      最长时间： " + maxTime/10, 430, 190);
             }
-            g.drawString("      第" + round + "轮已耗时： " + PlayRoom.time, 430, 220);
+            g.drawString("      第" + round + "轮已耗时： " + PlayRoom.time/10, 430, 220);
             g.drawString("当前轮游戏蚂蚁初始方向为：", 50, 80);
 
             if (round < (1 << antCount)) {
@@ -162,6 +161,8 @@ public class CreepingGame extends Frame {
                     if (AntCollision(i, j)) {
                         antList.get(i).changeDirection();
                         antList.get(j).changeDirection();
+                        antList.get(i).setPosition(antList.get(i).getPosition() + 0.1 * velocity);
+                        antList.get(j).setPosition(antList.get(j).getPosition() + 0.1 * velocity);
                         break;
                     }
                 }
@@ -171,10 +172,10 @@ public class CreepingGame extends Frame {
 
     // 检测两只蚂蚁是否碰撞
     private boolean AntCollision(int id1, int id2) {
-        int left, right, distance;
-        // 两只蚂蚁各自的位置
-        int posAnt1 = antList.get(id1).getPosition();
-        int posAnt2 = antList.get(id2).getPosition();
+        double left, right, distance;
+        // 两只蚂蚁各自的位置，找出左边的蚂蚁和右边的蚂蚁
+        double posAnt1 = antList.get(id1).getPosition();
+        double posAnt2 = antList.get(id2).getPosition();
         if (posAnt1 <= posAnt2) {
             left = id1;
             right = id2;
@@ -185,9 +186,9 @@ public class CreepingGame extends Frame {
             distance = posAnt1 - posAnt2;
         }
         // 距离为0且方向相反
-        if (distance == 0 && antList.get(left).getDirection() + antList.get(right).getDirection() == 1) {
+        if (distance == 0 && antList.get((int)left).getDirection() + antList.get((int)right).getDirection() == 1) {
             return true;
-        } else
-            return distance <= velocity && (antList.get(left).getDirection() == 1 && antList.get(right).getDirection() == 0);
+        } else // 距离小于0.1秒内的位移，且相向而行
+            return distance <= 0.1 * velocity && (antList.get((int)left).getDirection() == 1 && antList.get((int)right).getDirection() == 0);
     }
 }

@@ -10,7 +10,7 @@ public class UserPanel extends JFrame {
     private int poleLength; // 木杆长度
     private int antCount; // 蚂蚁数量
     private int velocity; // 蚂蚁速度
-    private int[] antPosition; // 蚂蚁的位置
+    private double[] antPosition; // 蚂蚁的位置
     public boolean inputDone; // 是否已输入完成
 
     // 构建用户面板
@@ -69,7 +69,7 @@ public class UserPanel extends JFrame {
                     poleLength = Integer.parseInt(poleLengthText.getText());
                     antCount = Integer.parseInt(antCountText.getText());
                     velocity = Integer.parseInt(velocityText.getText());
-                    antPosition = stringToIntArr(posText.getText());
+                    antPosition = (stringToDoubleArr(posText.getText()));
                 } catch (Exception exception) {
                     JOptionPane.showMessageDialog(null,
                             "请输入合法整数！",
@@ -88,21 +88,21 @@ public class UserPanel extends JFrame {
         });
     }
 
-    // 将输入位置的string类型数组转化为int型数组
-    private static int[] stringToIntArr(String str) {
+    // 将输入位置的string类型数组转化为double型数组
+    private static double[] stringToDoubleArr(String str) {
         String[] arr = str.split("\\s+");
-        int[] intArr = new int[arr.length];
+        double[] doubleArr = new double[arr.length];
         for (int i = 0; i < arr.length; i++) {
-            intArr[i] = Integer.parseInt(arr[i]);
+            doubleArr[i] = Integer.parseInt(arr[i]);
         }
-        return intArr;
+        return doubleArr;
     }
 
     // 校验柱子长度
     private Boolean checkPoleLength(int poleLength) {
-        if (poleLength >= 650 || poleLength <= 0) {
+        if (poleLength <= 0) {
             JOptionPane.showMessageDialog(null,
-                    "输入木杆长度不合法",
+                    "输入木杆长度应大于0",
                     "错误",
                     JOptionPane.ERROR_MESSAGE);
             return false;
@@ -114,7 +114,7 @@ public class UserPanel extends JFrame {
     private Boolean checkAntCount(int antCount) {
         if (antCount <= 0 || antCount > 5) {
             JOptionPane.showMessageDialog(null,
-                    "输入蚂蚁数量不合法",
+                    "输入蚂蚁数量应当大于0",
                     "错误",
                     JOptionPane.ERROR_MESSAGE);
             return false;
@@ -125,9 +125,9 @@ public class UserPanel extends JFrame {
     // 校验速度
     private Boolean checkVelocity(int velocity) {
         // 速度要能够整除木杆长度
-        if (velocity <= 0 || velocity > poleLength || poleLength % velocity != 0) {
+        if (velocity <= 0 || velocity > poleLength) {
             JOptionPane.showMessageDialog(null,
-                    "您输入的初始位置不合法，请确保初始位置能被蚂蚁速度整除且与蚂蚁数量匹配",
+                    "输入的速度应当大于0",
                     "错误",
                     JOptionPane.ERROR_MESSAGE);
             return false;
@@ -136,19 +136,19 @@ public class UserPanel extends JFrame {
     }
 
     // 校验蚂蚁位置
-    private Boolean checkPositions(int[] positions) {
+    private Boolean checkPositions(double[] positions) {
         if (positions.length != antCount) {
             JOptionPane.showMessageDialog(null,
-                    "您输入的初始位置不合法，请确保初始位置能被蚂蚁速度整除且与蚂蚁数量匹配",
+                    "您输入的位置数与蚂蚁数不匹配，请确保它们一致！",
                     "错误",
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
         for (int i = 0; i != positions.length; i++) {
-            // 速度要能够整除每只蚂蚁的位置，否则报错,并且位置不能超出木杆长度范围
-            if (positions[i] < 0 || positions[i] > poleLength || positions[i] % velocity != 0) {
+            // 每个位置都应大于等于0，且不能超出木杆长度范围
+            if (positions[i] < 0 || positions[i] > poleLength) {
                 JOptionPane.showMessageDialog(null,
-                        "输入位置不合法，蚂蚁速度应能整除每个位置且位置个数=蚂蚁数量",
+                        "您输入的位置不合法，请确保每个位置大于0，且不超出木杆的长度！",
                         "错误",
                         JOptionPane.ERROR_MESSAGE);
                 return false;
@@ -157,36 +157,17 @@ public class UserPanel extends JFrame {
         return true;
     }
 
-    // Getters & Setters
+    // Getters
     public int getPoleLength() {
         return poleLength;
     }
-
-    public void setPoleLength(int poleLength) {
-        this.poleLength = poleLength;
-    }
-
     public int getAntCount() {
         return antCount;
     }
-
-    public void setAntCount(int antCount) {
-        this.antCount = antCount;
-    }
-
     public int getVelocity() {
         return velocity;
     }
-
-    public void setVelocity(int velocity) {
-        this.velocity = velocity;
-    }
-
-    public int[] getAntPosition() {
+    public double[] getAntPosition() {
         return antPosition;
-    }
-
-    public void setAntPosition(int[] antPosition) {
-        this.antPosition = antPosition;
     }
 }
