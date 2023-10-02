@@ -1,21 +1,32 @@
 package entity;
 
-import java.util.Objects;
+import utils.LoadBufferedImage;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
+
+import static utils.Constants.poleImgPath;
 
 public class Pole {
-    private int length; // 木杆的长度
+    private int poleLength; // 木杆的长度
+    private final BufferedImage poleImg; // 木杆图片素材
 
     // Constructor
     public Pole(int length) {
-        this.length = length;
+        this.poleLength = length;
+        this.poleImg = LoadBufferedImage.loadBufferedImage(poleImgPath);
     }
 
     // Getters & Setters
-    public int getLength() {
-        return length;
-    }
-    public void setLength(int length) {
-        this.length = length;
+    public int getPoleLength() {
+        return poleLength;
     }
 
+    public void setPoleLength(int poleLength) {
+        this.poleLength = poleLength;
+    }
+
+    public void drawPole(Graphics g) {
+        g.drawImage(poleImg, 115, 200, poleLength + 10, 20, null);
+    }
 }

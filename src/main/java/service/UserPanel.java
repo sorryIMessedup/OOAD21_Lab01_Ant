@@ -156,4 +156,30 @@ public class UserPanel extends JFrame {
         }
         return true;
     }
+
+    // Getters & Setters
+    public int getPoleLength() {
+        return poleLength;
+    }
+    public void setPoleLength(int poleLength) {
+        this.poleLength = poleLength;
+    }
+    public int getAntCount() {
+        return antCount;
+    }
+    public void setAntCount(int antCount) {
+        this.antCount = antCount;
+    }
+    public int getVelocity() {
+        return velocity;
+    }
+    public void setVelocity(int velocity) {
+        this.velocity = velocity;
+    }
+    public int[] getAntPosition() {
+        return antPosition;
+    }
+    public void setAntPosition(int[] antPosition) {
+        this.antPosition = antPosition;
+    }
 }

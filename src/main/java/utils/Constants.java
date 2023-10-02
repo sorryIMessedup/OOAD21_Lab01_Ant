@@ -7,4 +7,6 @@ public class Constants {
     public enum gameState {
         GAME_READY, GAME_RUNNING, GAME_STOPPED
     }
+
+    public static final String poleImgPath="src/main/resource/img.png";
 }
