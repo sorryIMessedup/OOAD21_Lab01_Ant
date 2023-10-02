@@ -23,7 +23,7 @@ public class CreepingGame extends Frame {
     private final int[][] antDirection; // 蚂蚁方向数组
     private static int state; // 游戏状态
     private static int round; // 游戏回合
-    private int roundTime; // 一轮游戏的时间
+
     private int minTime = (int) 2e5;
     private int maxTime = (int) -2e5;
 
@@ -58,7 +58,7 @@ public class CreepingGame extends Frame {
 
     // 初始化游戏中各个对象
     private void initGame() {
-        roundTime = 0;
+        PlayRoom.time = 0;
         round = 0;
         pole = new Pole(poleLength);
         antList = new ArrayList<>();
@@ -87,7 +87,7 @@ public class CreepingGame extends Frame {
 
         if (round < (1 << antCount)) {
             if (state == gameState.GAME_READY.ordinal()) {
-                roundTime = 0;
+                PlayRoom.time = 0;
                 for (int i = 0; i < antCount && round < (1 << antCount); i++) {
                     antList.get(i).setPosition(antPosition[i] + 100);
                     antList.get(i).setDirection(antDirection[round][i]);
@@ -99,24 +99,29 @@ public class CreepingGame extends Frame {
                     ant.drawAnt(bufImg.getGraphics());
                 }
                 testCollision();
-                roundTime++;
+                PlayRoom.time++;
                 if (isAllReach()) {
                     changeState(gameState.GAME_STOPPED.ordinal());
                 }
             } else if (state == gameState.GAME_STOPPED.ordinal()) {
-                if (roundTime < minTime) minTime = roundTime;
-                if (roundTime > maxTime) maxTime = roundTime;
+                if (PlayRoom.time < minTime) minTime = PlayRoom.time;
+                if (PlayRoom.time > maxTime) maxTime = PlayRoom.time;
                 round++;
-                System.out.println(("第" + round + "轮结束，用时：" + roundTime));
+                System.out.println(("第" + round + "轮结束，用时：" + PlayRoom.time));
                 changeState(gameState.GAME_READY.ordinal());
             }
             g.setColor(Color.black);
             g.setFont(new Font("仿宋", Font.PLAIN, 20));
             g.drawImage(bufImg, 0, 0, null);
 
-            g.drawString("      最短时间：" + minTime, 430, 160);
-            g.drawString("      最长时间： " + maxTime, 430, 190);
-            g.drawString("      第" + round + "轮已耗时： " + roundTime, 430, 220);
+            if (maxTime < 0) {
+                g.drawString("      最短时间：" + "无", 430, 160);
+                g.drawString("      最长时间：" + "无", 430, 190);
+            } else {
+                g.drawString("      最短时间：" + minTime, 430, 160);
+                g.drawString("      最长时间： " + maxTime, 430, 190);
+            }
+            g.drawString("      第" + round + "轮已耗时： " + PlayRoom.time, 430, 220);
             g.drawString("当前轮游戏蚂蚁初始方向为：", 50, 80);
 
             if (round < (1 << antCount)) {
