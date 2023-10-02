@@ -20,7 +20,7 @@ public class CreepingGame extends Frame {
     private int antCount; // 蚂蚁数量
     private int velocity; // 速度
     private int[] antPosition; // 蚂蚁位置数组
-    private int[] antDirection; // 蚂蚁方向数组
+    private int[][] antDirection; // 蚂蚁方向数组
     private static int state; // 游戏状态
     private static int round; // 游戏回合
     private int roundTime; // 一轮游戏的时间
@@ -30,7 +30,7 @@ public class CreepingGame extends Frame {
     private final BufferedImage bufImg = new BufferedImage(750, 420, BufferedImage.TYPE_4BYTE_ABGR);
 
     // Constructor
-    public CreepingGame(int poleLength, int antCount, int velocity, int[] positions, int[] antDirection) {
+    public CreepingGame(int poleLength, int antCount, int velocity, int[] positions, int[][] antDirection) {
         this.poleLength = poleLength;
         this.antCount = antCount;
         this.velocity = velocity;
@@ -64,7 +64,7 @@ public class CreepingGame extends Frame {
         antList = new ArrayList<>();
 
         for (int i = 0; i < antCount; i++) {
-            Ant ant = new Ant(i,antDirection[i],velocity,antPosition[i] + 100);
+            Ant ant = new Ant(i, antDirection[round][i],velocity,antPosition[i] + 100);
             antList.add(ant);
         }
         changeState(gameState.GAME_READY.ordinal());
@@ -91,7 +91,7 @@ public class CreepingGame extends Frame {
             roundTime = 0;
             for (int i = 0; i < antCount; i++) {
                 antList.get(i).setPosition(antPosition[i] + 100);
-                antList.get(i).setDirection(antDirection[i]);
+                antList.get(i).setDirection(antDirection[round][i]);
             }
             changeState(gameState.GAME_RUNNING.ordinal());
         }
@@ -100,10 +100,6 @@ public class CreepingGame extends Frame {
                 ant.creep(pole);
                 ant.drawAnt(bufImg.getGraphics());
             }
-            for (Ant ant2 : antList) {
-                System.out.print(ant2.getPosition()+" ");
-            }
-            System.out.print('\n');
             testCollision();
             roundTime++;
             if (isAllReach()) {
@@ -121,7 +117,7 @@ public class CreepingGame extends Frame {
         g.drawImage(bufImg, 0, 0, null);
         g.drawString("最短时间：" + minTime, 430, 160);
         g.drawString("最长时间： " + maxTime, 430, 210);
-        g.drawString("当前轮已耗时： " + roundTime, 430, 260);
+        g.drawString("第"+round+"轮已耗时： " + roundTime, 430, 260);
     }
 
     // 改变游戏状态
