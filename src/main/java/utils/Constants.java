@@ -8,12 +8,19 @@ public class Constants {
         GAME_READY, GAME_RUNNING, GAME_STOPPED
     }
 
-    public static final String poleImgPath="src/main/resource/img.png";
-    public static final String[] antImgPath={
-            "src/main/resource/antImages/4.png",
-            "src/main/resource/antImages/5.png",
-            "src/main/resource/antImages/6.png",
-            "src/main/resource/antImages/7.png",
-            "src/main/resource/antImages/8.png",
+    public static final String poleImgPath="src/main/resource/poleImg.png";
+    public static final String[] antLeftImgPath = {
+            "src/main/resource/antLeftImages/0.png",
+            "src/main/resource/antLeftImages/1.png",
+            "src/main/resource/antLeftImages/2.png",
+            "src/main/resource/antLeftImages/3.png",
+            "src/main/resource/antLeftImages/4.png",
+    };
+    public static final String[] antRightImgPath = {
+            "src/main/resource/antRightImages/0.png",
+            "src/main/resource/antRightImages/1.png",
+            "src/main/resource/antRightImages/2.png",
+            "src/main/resource/antRightImages/3.png",
+            "src/main/resource/antRightImages/4.png"
     };
 }

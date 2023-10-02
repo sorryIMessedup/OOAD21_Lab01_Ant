@@ -6,14 +6,15 @@ import utils.LoadBufferedImage;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import static utils.Constants.antImgPath;
+import static utils.Constants.*;
 
 public class Ant {
     private int antId; // 蚂蚁的id
     private int direction; // 方向
     private int velocity; // 速度
     private int position; // 在木杆上的位置
-    private final BufferedImage antImg; // 图片路径
+    private final BufferedImage antLeftImg; // 图片路径
+    private final BufferedImage antRightImg; // 图片路径
 
     // Constructor
     public Ant(int antId, int direction, int velocity, int position) {
@@ -21,7 +22,8 @@ public class Ant {
         this.direction = direction;
         this.velocity = velocity;
         this.position = position;
-        this.antImg = LoadBufferedImage.loadBufferedImage(antImgPath[this.antId]);
+        this.antLeftImg = LoadBufferedImage.loadBufferedImage(antLeftImgPath[this.antId]);
+        this.antRightImg = LoadBufferedImage.loadBufferedImage(antRightImgPath[this.antId]);
     }
 
     // Getters & Setters
@@ -91,6 +93,9 @@ public class Ant {
 
     // 绘制蚂蚁
     public void drawAnt(Graphics graphics) {
-        graphics.drawImage(antImg, position, 200, null);
+        if (this.direction == antDirection.TO_LEFT.ordinal())
+            graphics.drawImage(antLeftImg, position, 200, null);
+        else
+            graphics.drawImage(antRightImg, position, 200, null);
     }
 }

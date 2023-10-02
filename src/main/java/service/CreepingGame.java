@@ -15,12 +15,12 @@ import static utils.Constants.gameState;
 
 public class CreepingGame extends Frame {
     private Pole pole; // 杆子
-    private int poleLength; // 杆子长度
+    private final int poleLength; // 杆子长度
     private List<Ant> antList; // 当前蚂蚁列表
-    private int antCount; // 蚂蚁数量
-    private int velocity; // 速度
-    private int[] antPosition; // 蚂蚁位置数组
-    private int[][] antDirection; // 蚂蚁方向数组
+    private final int antCount; // 蚂蚁数量
+    private final int velocity; // 速度
+    private final int[] antPosition; // 蚂蚁位置数组
+    private final int[][] antDirection; // 蚂蚁方向数组
     private static int state; // 游戏状态
     private static int round; // 游戏回合
     private int roundTime; // 一轮游戏的时间
@@ -42,7 +42,7 @@ public class CreepingGame extends Frame {
 
     // 初始化Frame
     private void initFrame() {
-        setSize(750,420); // 设置窗口大小
+        setSize(750, 420); // 设置窗口大小
         setLocationRelativeTo(null); // 居中
         setTitle("Ants Creeping Game (OOAD21 Lab01)"); // 标题
         // 监听Jframe窗体关闭事件
@@ -64,12 +64,12 @@ public class CreepingGame extends Frame {
         antList = new ArrayList<>();
 
         for (int i = 0; i < antCount; i++) {
-            Ant ant = new Ant(i, antDirection[round][i],velocity,antPosition[i] + 100);
+            Ant ant = new Ant(i, antDirection[round][i], velocity, antPosition[i] + 100);
             antList.add(ant);
         }
         changeState(gameState.GAME_READY.ordinal());
         new Thread(() -> {
-            while (true) {
+            while (round < (1 << antCount)) {
                 repaint();
                 try {
                     Thread.sleep(50);
@@ -82,42 +82,56 @@ public class CreepingGame extends Frame {
 
     // repaint()会调用update()函数
     @Override
-    public void update (Graphics g) {
-        g.setColor(Color.black);
-        g.setFont(new Font("微软雅黑",Font.PLAIN,20));
+    public void update(Graphics g) {
         pole.drawPole(bufImg.getGraphics()); // 绘制木杆
 
-        if (state == gameState.GAME_READY.ordinal()) {
-            roundTime = 0;
-            for (int i = 0; i < antCount; i++) {
-                antList.get(i).setPosition(antPosition[i] + 100);
-                antList.get(i).setDirection(antDirection[round][i]);
+        if (round < (1 << antCount)) {
+            if (state == gameState.GAME_READY.ordinal()) {
+                roundTime = 0;
+                for (int i = 0; i < antCount && round < (1 << antCount); i++) {
+                    antList.get(i).setPosition(antPosition[i] + 100);
+                    antList.get(i).setDirection(antDirection[round][i]);
+                }
+                changeState(gameState.GAME_RUNNING.ordinal());
+            } else if (state == gameState.GAME_RUNNING.ordinal()) {
+                for (Ant ant : antList) {
+                    ant.creep(pole);
+                    ant.drawAnt(bufImg.getGraphics());
+                }
+                testCollision();
+                roundTime++;
+                if (isAllReach()) {
+                    changeState(gameState.GAME_STOPPED.ordinal());
+                }
+            } else if (state == gameState.GAME_STOPPED.ordinal()) {
+                if (roundTime < minTime) minTime = roundTime;
+                if (roundTime > maxTime) maxTime = roundTime;
+                round++;
+                System.out.println(("第" + round + "轮结束，用时：" + roundTime));
+                changeState(gameState.GAME_READY.ordinal());
             }
-            changeState(gameState.GAME_RUNNING.ordinal());
-        }
-        else if (state == gameState.GAME_RUNNING.ordinal()) {
-            for (Ant ant : antList) {
-                ant.creep(pole);
-                ant.drawAnt(bufImg.getGraphics());
-            }
-            testCollision();
-            roundTime++;
-            if (isAllReach()) {
-                changeState(gameState.GAME_STOPPED.ordinal());
-            }
-        }
-        else if (state == gameState.GAME_STOPPED.ordinal()) {
-            if (roundTime < minTime) minTime = roundTime;
-            if (roundTime > maxTime) maxTime = roundTime;
-            round++;
-            System.out.println(("第"+round+"轮结束，用时："+roundTime));
-            changeState(gameState.GAME_READY.ordinal());
-        }
+            g.setColor(Color.black);
+            g.setFont(new Font("仿宋", Font.PLAIN, 20));
+            g.drawImage(bufImg, 0, 0, null);
 
-        g.drawImage(bufImg, 0, 0, null);
-        g.drawString("最短时间：" + minTime, 430, 160);
-        g.drawString("最长时间： " + maxTime, 430, 210);
-        g.drawString("第"+round+"轮已耗时： " + roundTime, 430, 260);
+            g.drawString("      最短时间：" + minTime, 430, 160);
+            g.drawString("      最长时间： " + maxTime, 430, 190);
+            g.drawString("      第" + round + "轮已耗时： " + roundTime, 430, 220);
+            g.drawString("当前轮游戏蚂蚁初始方向为：", 50, 80);
+
+            if (round < (1 << antCount)) {
+                StringBuilder dirFont = new StringBuilder();
+                for (int t : antDirection[round]) {
+                    if (t == 0) dirFont.append("左 ");
+                    else dirFont.append("右 ");
+                }
+                g.drawString(String.valueOf(dirFont), 50, 110);
+            }
+        }
+        if (round >= (1 << antCount)) {
+            g.setFont(new Font("宋体", Font.BOLD, 28));
+            g.drawString("游戏结束！请关闭窗口", 100, 350);
+        }
     }
 
     // 改变游戏状态
@@ -127,8 +141,8 @@ public class CreepingGame extends Frame {
 
     // 检测所有蚂蚁是否出界
     private boolean isAllReach() {
-        for (int m = 0; m < antList.size(); m++) {
-            if (antList.get(m).getPosition() > 100 && antList.get(m).getPosition() < 100 + poleLength) {
+        for (Ant ant : antList) {
+            if (ant.getPosition() > 100 && ant.getPosition() < 100 + poleLength) {
                 return false;
             }
         }

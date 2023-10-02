@@ -33,5 +33,6 @@ public class PlayRoom {
                 myUserPanel.getAntPosition(),
                 direction
         );
+
     }
 }
