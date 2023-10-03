@@ -162,7 +162,7 @@ public class CreepingGame extends Frame {
                         antList.get(i).changeDirection();
                         antList.get(j).changeDirection();
                         antList.get(i).setPosition(antList.get(i).getPosition() + 0.1 * velocity);
-                        antList.get(j).setPosition(antList.get(j).getPosition() + 0.1 * velocity);
+                        antList.get(j).setPosition(antList.get(j).getPosition() - 0.1 * velocity);
                         break;
                     }
                 }
